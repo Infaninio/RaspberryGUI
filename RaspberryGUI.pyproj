@@ -21,7 +21,17 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\mainWindow.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="RaspberryGUI.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="img\" />
+    <Folder Include="src\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="img\rapibackresize.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
