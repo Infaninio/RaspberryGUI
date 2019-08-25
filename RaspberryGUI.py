@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from src.mainWindow import MainWindow
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 import sys
