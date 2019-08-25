@@ -31,6 +31,13 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="img\av.png" />
+    <Content Include="img\beamer.png" />
+    <Content Include="img\cd.png" />
+    <Content Include="img\computer.png" />
+    <Content Include="img\einstellungen.png" />
+    <Content Include="img\icoback2kl.png" />
+    <Content Include="img\musik.png" />
     <Content Include="img\rapibackresize.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
