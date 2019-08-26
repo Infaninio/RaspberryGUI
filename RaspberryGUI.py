@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from src.mainWindow import MainWindow
+from src.mainWindow import Window
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
+from src.IoController import initIO
+from src.yamlReader import YamlReader
 import sys
 
 
@@ -9,10 +11,10 @@ import sys
 
 if __name__ == "__main__":
     
+    initIO()
     app = QApplication(sys.argv)
 
-    mainWin = MainWindow()
-    mainWin.show()
+    mainWin = Window()
 
 
     sys.exit(app.exec_())

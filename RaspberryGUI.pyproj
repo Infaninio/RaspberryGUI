@@ -21,10 +21,14 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\IoController.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\mainWindow.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="RaspberryGUI.py" />
+    <Compile Include="src\yamlReader.py" />
     <Compile Include="src\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -34,6 +38,9 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.yml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="img\av.png" />
     <Content Include="img\beamer.png" />
     <Content Include="img\cd.png" />

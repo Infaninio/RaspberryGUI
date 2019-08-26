@@ -3,18 +3,32 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+import src.IoController as ioContr
 
 IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
+
+
+class Window():
+    # State Machine für die Anzeige
+    def __init__(self):
+        self.mainWin = MainWindow(self)
+        self.musikWin = MusikWinGen(self)
+        self.mainWin.show()
+
+    def changeToMusik(self, arg):
+        self.mainWin.hide()
+        self.musikWin.show()
+    def changeToMenu(self, arg):
+        self.mainWin.show()
+        self.musikWin.hide()
+
 
 class GenWindow(QMainWindow):
     """description of class"""
    
-   
-    def __init__(self):
+    def __init__(self, window):
         super().__init__()
-
-
-
+        self.window = window
         self.setGeometry(0,0,800,480)
         self.setWindowTitle('RaspberryTouch')
 
@@ -23,6 +37,7 @@ class GenWindow(QMainWindow):
         styleSheetStr = "QMainWindow#GenWindow{background-image: url(" + IMAGEPATH + "/rapibackresize.jpg" + ");}"
         self.setStyleSheet(styleSheetStr)
 
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         #Leiste
         leiste = QWidget(self)
@@ -30,8 +45,11 @@ class GenWindow(QMainWindow):
         leiste.setGeometry(0,420,800,60)
 
         closeBt = QPushButton("EXIT", leiste)
+
+        closeBt.clicked.connect(self.close)
         closeBt.setGeometry(0,0,200,60)
         closeBt.setFont(QFont("Calibri", 37, QFont.Bold))
+
 
         dateLb = QLabel("Das ist Ein Text",leiste)
         dateLb.setGeometry(200,0,400,60)
@@ -42,6 +60,8 @@ class GenWindow(QMainWindow):
         menuBt = QPushButton("Menü", leiste)
         menuBt.setGeometry(600,0,200,60)
         menuBt.setFont(QFont("Calibri", 37, QFont.Bold))
+        menuBt.clicked.connect(self.window.changeToMenu)
+
 
 
 
@@ -58,8 +78,8 @@ class GenWindow(QMainWindow):
 
 class MainWindow(GenWindow):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, window):
+        super().__init__(window)
 
         #String für den Button Hintergrund
         styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2kl.png" + ");}"
@@ -71,6 +91,7 @@ class MainWindow(GenWindow):
         computerBt.setStyleSheet(styleSheetStr)
         computerBt.setIcon(QIcon(IMAGEPATH + "/computer.png"))
         computerBt.setIconSize(QSize(110,110))
+        computerBt.clicked.connect(ioContr.bootPC)
 
         #CD Button
         cdBt = QPushButton(self)
@@ -87,6 +108,7 @@ class MainWindow(GenWindow):
         musikBt.setStyleSheet(styleSheetStr)
         musikBt.setIcon(QIcon(IMAGEPATH + "/musik.png"))
         musikBt.setIconSize(QSize(110,110))
+        musikBt.clicked.connect(self.window.changeToMusik)
 
         avBt = QPushButton(self)
         avBt.setGeometry(110,232,128,128)
@@ -108,5 +130,12 @@ class MainWindow(GenWindow):
         einstellungenBt.setStyleSheet(styleSheetStr)
         einstellungenBt.setIcon(QIcon(IMAGEPATH + "/einstellungen.png"))
         einstellungenBt.setIconSize(QSize(110,110))
+
+
+class MusikWinGen(GenWindow):
+    def __init__(self, window):
+        super().__init__(window)
+        Button = QPushButton("Ein schöner Button",self)
+        Button.setGeometry(100,100,100,100)
 
 
