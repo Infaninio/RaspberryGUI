@@ -14,13 +14,29 @@ class Window():
         self.mainWin = MainWindow(self)
         self.musikWin = MusikWinGen(self)
         self.mainWin.show()
+        self.musikStat = False
 
     def changeToMusik(self, arg):
-        self.mainWin.hide()
         self.musikWin.show()
+        self.mainWin.hide()
     def changeToMenu(self, arg):
         self.mainWin.show()
         self.musikWin.hide()
+
+
+    def playMusik(self, arg):
+        if self.musikStat == True:
+            self.musikStat = False
+            print("Musik wiedergeben")
+        else:
+            self.musikStat = True
+            print("Musik pausieren")
+
+    def nextTitle(self, arg):
+        print("Next Title")
+
+    def prevTitle(self, arg):
+        print("Last Title")
 
 
 class GenWindow(QMainWindow):
@@ -44,26 +60,58 @@ class GenWindow(QMainWindow):
         leiste.setStyleSheet("background: transparent")
         leiste.setGeometry(0,420,800,60)
 
-        closeBt = QPushButton("EXIT", leiste)
+        closeBt = QPushButton("Ende", leiste)
 
         closeBt.clicked.connect(self.close)
         closeBt.setGeometry(0,0,200,60)
         closeBt.setFont(QFont("Calibri", 37, QFont.Bold))
+        closeBt.setStyleSheet("QPushButton{background-image: url(" + IMAGEPATH + "/icobackleiste.png" + ");color: white;}")
+        closeBt.setFlat(True)
 
 
-        dateLb = QLabel("Das ist Ein Text",leiste)
-        dateLb.setGeometry(200,0,400,60)
-        dateLb.setAlignment(Qt.AlignCenter)
-        dateLb.setFont(QFont("Calibri", 30, QFont.Bold))
+        musikWd = QWidget(leiste)
+        musikWd.setStyleSheet("background: transparent")
+        musikWd.setGeometry(200,0,400,60)
         
+        self.playM = QPushButton(musikWd)
+        self.playM.setGeometry(140,0,120,60)
+        self.playM.setFlat(True)
+        self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
+        self.playM.setIconSize(QSize(80,40))
+        self.playM.clicked.connect(self.playBtCl)
+
+        prevMBt = QPushButton(musikWd)
+        prevMBt.setGeometry(20,0,120,60)
+        prevMBt.setFlat(True)
+        prevMBt.setIcon(QIcon(IMAGEPATH + "/icoprev.png"))
+        prevMBt.setIconSize(QSize(80,40))
+        prevMBt.clicked.connect(self.window.prevTitle)
+        
+      
+        nextMBt = QPushButton(musikWd)
+        nextMBt.setGeometry(260,0,120,60)
+        nextMBt.setFlat(True)
+        nextMBt.setIcon(QIcon(IMAGEPATH + "/iconext.png"))
+        nextMBt.setIconSize(QSize(80,40))
+        nextMBt.clicked.connect(self.window.nextTitle)
+
+
 
         menuBt = QPushButton("Menü", leiste)
         menuBt.setGeometry(600,0,200,60)
         menuBt.setFont(QFont("Calibri", 37, QFont.Bold))
+        menuBt.setStyleSheet("QPushButton{background-image: url(" + IMAGEPATH + "/icobackleiste.png" + "); color: white;}")
         menuBt.clicked.connect(self.window.changeToMenu)
+        menuBt.setFlat(True)
 
 
-
+    def playBtCl(self, arg):
+        self.window.playMusik(arg)
+        if self.window.musikStat == True:
+            self.playM.setIcon(QIcon(IMAGEPATH + "/icopause.png"))
+        else:
+            self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
+        
 
 
     def closeEvent(self, event):
@@ -139,3 +187,8 @@ class MusikWinGen(GenWindow):
         Button.setGeometry(100,100,100,100)
 
 
+
+
+class AvWindow(GenWindow):
+    def __init__(self, window):
+        super().__init__(window)
