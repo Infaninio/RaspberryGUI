@@ -28,6 +28,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="RaspberryGUI.py" />
+    <Compile Include="src\mediaPlayer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\yamlReader.py" />
     <Compile Include="src\__init__.py">
       <SubType>Code</SubType>
@@ -43,10 +46,12 @@
     </Content>
     <Content Include="img\av.png" />
     <Content Include="img\beamer.png" />
+    <Content Include="img\blueray.png" />
     <Content Include="img\cd.png" />
     <Content Include="img\computer.png" />
     <Content Include="img\einstellungen.png" />
     <Content Include="img\icoback2kl.png" />
+    <Content Include="img\icoback2PlayList.png" />
     <Content Include="img\icobackleiste.png" />
     <Content Include="img\iconext.png" />
     <Content Include="img\icopause.png" />
@@ -54,6 +59,7 @@
     <Content Include="img\icoprev.png" />
     <Content Include="img\musik.png" />
     <Content Include="img\rapibackresize.jpg" />
+    <Content Include="img\raspberry.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

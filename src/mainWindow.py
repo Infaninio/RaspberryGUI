@@ -4,8 +4,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import src.IoController as ioContr
+import os
 
 IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
+MUSIKPATH = "Z:"
 
 
 class Window():
@@ -13,6 +15,7 @@ class Window():
     def __init__(self):
         self.mainWin = MainWindow(self)
         self.musikWin = MusikWinGen(self)
+        self.avWin = AvWindow(self)
         self.mainWin.show()
         self.musikStat = False
 
@@ -22,6 +25,10 @@ class Window():
     def changeToMenu(self, arg):
         self.mainWin.show()
         self.musikWin.hide()
+        self.avWin.hide()
+    def changeToAv(self, arg):
+        self.avWin.show()
+        self.mainWin.hide()
 
 
     def playMusik(self, arg):
@@ -163,7 +170,9 @@ class MainWindow(GenWindow):
         avBt.setFlat(True)
         avBt.setStyleSheet(styleSheetStr)
         avBt.setIcon(QIcon(IMAGEPATH + "/av.png"))
+
         avBt.setIconSize(QSize(110,110))
+        avBt.clicked.connect(self.window.changeToAv)
 
         beamerBt = QPushButton(self)
         beamerBt.setGeometry(336,232,128,128)
@@ -183,8 +192,37 @@ class MainWindow(GenWindow):
 class MusikWinGen(GenWindow):
     def __init__(self, window):
         super().__init__(window)
-        Button = QPushButton("Ein schöner Button",self)
-        Button.setGeometry(100,100,100,100)
+
+        styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2PlayList.png" + "); color: white;}"
+        PlListWg = QWidget(self)
+        PlListWg.setGeometry(200,30,400,1000)
+        PlListWg.setStyleSheet("background-color: transparent")
+
+        PlListSa = QScrollArea(self)
+        PlListSa.setGeometry(200,30,450,350)
+        PlListSa.setWidget(PlListWg)
+        PlListSa.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        PlListSa.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        PlListSa.setStyleSheet("background-color:transparent;")
+        PlListSa.setFrameStyle(QFrame.NoFrame)
+
+
+
+        self.btList = QButtonGroup(self)
+        self.btList.setExclusive(True)
+
+        for i in range(30):
+
+            self.btList.addButton(QPushButton("Test " + str(i), PlListWg),i)
+            self.btList.button(i).setGeometry(0,(i*60 )+ (i*10),400,60)
+            self.btList.button(i).setFlat(True)
+            self.btList.button(i).setStyleSheet(styleSheetStr)
+
+        self.btList.buttonClicked.connect(self.testprint) 
+
+
+    def testprint(self, id):
+        print("Button Click"+ id.text())
 
 
 
@@ -192,3 +230,49 @@ class MusikWinGen(GenWindow):
 class AvWindow(GenWindow):
     def __init__(self, window):
         super().__init__(window)
+
+
+         #String für den Button Hintergrund
+        styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2kl.png" + ");}"
+
+        pcAudioBt = QPushButton(self)
+        pcAudioBt.setGeometry(110,143,128,128)
+        pcAudioBt.setFlat(True)
+        pcAudioBt.setStyleSheet(styleSheetStr)
+        pcAudioBt.setIcon(QIcon(IMAGEPATH + "/computer.png"))
+        pcAudioBt.setIconSize(QSize(110,110))
+        pcAudioBt.clicked.connect(self.pcAudioCon)
+
+        rpiAudioBt = QPushButton(self)
+        rpiAudioBt.setGeometry(336,143,128,128)
+        rpiAudioBt.setFlat(True)
+        rpiAudioBt.setStyleSheet(styleSheetStr)
+        rpiAudioBt.setIcon(QIcon(IMAGEPATH + "/raspberry.png"))
+        rpiAudioBt.setIconSize(QSize(110,110))
+        rpiAudioBt.clicked.connect(self.rpiAudioCon)
+
+        bluerayAudioBt = QPushButton(self)
+        bluerayAudioBt.setGeometry(562,143,128,128)
+        bluerayAudioBt.setFlat(True)
+        bluerayAudioBt.setStyleSheet(styleSheetStr)
+        bluerayAudioBt.setIcon(QIcon(IMAGEPATH + "/blueray.png"))
+        bluerayAudioBt.setIconSize(QSize(110,110))
+        bluerayAudioBt.clicked.connect(self.bluerayAudioCon)
+
+
+
+
+
+
+    def pcAudioCon(self, arg):
+        print("GAME Channel @Denon")
+
+    def rpiAudioCon(self, arg):
+        print("Connect Bluetooth @Denon")
+        try:
+            os.system("echo -e \"connect 08:EF:3B:35:DE:2C\" | bluetoothctl > /dev/null 2>&1")
+        except:
+            print("Maybe not Raspbian")
+
+    def bluerayAudioCon(self, arg):
+        print("BlueRay Channel @Denon")
