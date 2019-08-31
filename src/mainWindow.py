@@ -4,20 +4,23 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import src.IoController as ioContr
+from src.mediaPlayer import MediaPlayer
 import os
 
 IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
-MUSIKPATH = "Z:"
+
 
 
 class Window():
     # State Machine für die Anzeige
     def __init__(self):
+        self.mediaPlayer = MediaPlayer()
         self.mainWin = MainWindow(self)
         self.musikWin = MusikWinGen(self)
         self.avWin = AvWindow(self)
         self.mainWin.show()
         self.musikStat = False
+        
 
     def changeToMusik(self, arg):
         self.musikWin.show()
@@ -51,7 +54,7 @@ class GenWindow(QMainWindow):
    
     def __init__(self, window):
         super().__init__()
-        self.window = window
+        self.stateM = window
         self.setGeometry(0,0,800,480)
         self.setWindowTitle('RaspberryTouch')
 
@@ -92,7 +95,7 @@ class GenWindow(QMainWindow):
         prevMBt.setFlat(True)
         prevMBt.setIcon(QIcon(IMAGEPATH + "/icoprev.png"))
         prevMBt.setIconSize(QSize(80,40))
-        prevMBt.clicked.connect(self.window.prevTitle)
+        prevMBt.clicked.connect(self.stateM.prevTitle)
         
       
         nextMBt = QPushButton(musikWd)
@@ -100,7 +103,7 @@ class GenWindow(QMainWindow):
         nextMBt.setFlat(True)
         nextMBt.setIcon(QIcon(IMAGEPATH + "/iconext.png"))
         nextMBt.setIconSize(QSize(80,40))
-        nextMBt.clicked.connect(self.window.nextTitle)
+        nextMBt.clicked.connect(self.stateM.nextTitle)
 
 
 
@@ -108,13 +111,13 @@ class GenWindow(QMainWindow):
         menuBt.setGeometry(600,0,200,60)
         menuBt.setFont(QFont("Calibri", 37, QFont.Bold))
         menuBt.setStyleSheet("QPushButton{background-image: url(" + IMAGEPATH + "/icobackleiste.png" + "); color: white;}")
-        menuBt.clicked.connect(self.window.changeToMenu)
+        menuBt.clicked.connect(self.stateM.changeToMenu)
         menuBt.setFlat(True)
 
 
     def playBtCl(self, arg):
-        self.window.playMusik(arg)
-        if self.window.musikStat == True:
+        self.stateM.playMusik(arg)
+        if self.stateM.musikStat == True:
             self.playM.setIcon(QIcon(IMAGEPATH + "/icopause.png"))
         else:
             self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
@@ -163,7 +166,7 @@ class MainWindow(GenWindow):
         musikBt.setStyleSheet(styleSheetStr)
         musikBt.setIcon(QIcon(IMAGEPATH + "/musik.png"))
         musikBt.setIconSize(QSize(110,110))
-        musikBt.clicked.connect(self.window.changeToMusik)
+        musikBt.clicked.connect(self.stateM.changeToMusik)
 
         avBt = QPushButton(self)
         avBt.setGeometry(110,232,128,128)
@@ -172,7 +175,7 @@ class MainWindow(GenWindow):
         avBt.setIcon(QIcon(IMAGEPATH + "/av.png"))
 
         avBt.setIconSize(QSize(110,110))
-        avBt.clicked.connect(self.window.changeToAv)
+        avBt.clicked.connect(self.stateM.changeToAv)
 
         beamerBt = QPushButton(self)
         beamerBt.setGeometry(336,232,128,128)
@@ -195,7 +198,8 @@ class MusikWinGen(GenWindow):
 
         styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2PlayList.png" + "); color: white;}"
         PlListWg = QWidget(self)
-        PlListWg.setGeometry(200,30,400,1000)
+        scrollLength = 70 * self.stateM.mediaPlayer.numberOfPlaylists()
+        PlListWg.setGeometry(200,30,400,scrollLength)
         PlListWg.setStyleSheet("background-color: transparent")
 
         PlListSa = QScrollArea(self)
@@ -210,18 +214,22 @@ class MusikWinGen(GenWindow):
 
         self.btList = QButtonGroup(self)
         self.btList.setExclusive(True)
+        i = 0
+        for element in self.stateM.mediaPlayer.getPlaylistNames():
 
-        for i in range(30):
-
-            self.btList.addButton(QPushButton("Test " + str(i), PlListWg),i)
-            self.btList.button(i).setGeometry(0,(i*60 )+ (i*10),400,60)
-            self.btList.button(i).setFlat(True)
-            self.btList.button(i).setStyleSheet(styleSheetStr)
+            if element != "default":
+                self.btList.addButton(QPushButton(element, PlListWg),i)
+                self.btList.button(i).setGeometry(0,(i*60 )+ (i*10),400,60)
+                self.btList.button(i).setFlat(True)
+                self.btList.button(i).setStyleSheet(styleSheetStr)
+            i += 1
 
         self.btList.buttonClicked.connect(self.testprint) 
 
 
     def testprint(self, id):
+
+        self.stateM.mediaPlayer.setPlayList(id.text())
         print("Button Click"+ id.text())
 
 
@@ -270,7 +278,7 @@ class AvWindow(GenWindow):
     def rpiAudioCon(self, arg):
         print("Connect Bluetooth @Denon")
         try:
-            os.system("echo -e \"connect 08:EF:3B:35:DE:2C\" | bluetoothctl > /dev/null 2>&1")
+            os.system("sudo echo -e \"connect 08:EF:3B:35:DE:2C\" | bluetoothctl > /dev/null 2>&1")
         except:
             print("Maybe not Raspbian")
 
