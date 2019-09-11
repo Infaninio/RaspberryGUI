@@ -49,12 +49,13 @@ class MediaPlayer():
         self.currPlaylist.clear()
         for line in file:
             path = MUSIKPATH + line
-            path.replace("\\", "\\\\")
+            #Zeilenumbruch am ende des Pfad Stringes hat dazu geführt dass die Datei nicht gefunden werden konnnten, fällt das "\n" weg ist es kein Problem mehr
+            path = path[:-1]
             self.player.setMedia(QMediaContent(QUrl.fromLocalFile(path)))
             print(path)
         
         self.currPlaylist.setCurrentIndex(1)
-        self.player.setPlaylist(self.currPlaylist)
+        #self.player.setPlaylist(self.currPlaylist)
         #self.player.setMedia(QMediaContent(QUrl.fromLocalFile("E:\Musik\Martin\(I Can't Get No) Satisfaction.mp3")))
         print(self.player.mediaStatus())
 
