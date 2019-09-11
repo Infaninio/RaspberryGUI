@@ -74,7 +74,7 @@ class GenWindow(QMainWindow):
 
         closeBt.clicked.connect(self.close)
         closeBt.setGeometry(0,0,200,60)
-        closeBt.setFont(QFont("Calibri", 37, QFont.Bold))
+        closeBt.setFont(QFont("Calibri", 35, QFont.Bold))
         closeBt.setStyleSheet("QPushButton{background-image: url(" + IMAGEPATH + "/icobackleiste.png" + ");color: white;}")
         closeBt.setFlat(True)
 
@@ -119,8 +119,10 @@ class GenWindow(QMainWindow):
         self.stateM.playMusik(arg)
         if self.stateM.musikStat == True:
             self.playM.setIcon(QIcon(IMAGEPATH + "/icopause.png"))
+            self.stateM.mediaPlayer.play()
         else:
             self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
+            self.stateM.mediaPlayer.pause()
         
 
 
@@ -222,7 +224,8 @@ class MusikWinGen(GenWindow):
                 self.btList.button(i).setGeometry(0,(i*60 )+ (i*10),400,60)
                 self.btList.button(i).setFlat(True)
                 self.btList.button(i).setStyleSheet(styleSheetStr)
-            i += 1
+                self.btList.button(i).setFont(QFont("Calibri", 25, QFont.Bold))
+                i +=1
 
         self.btList.buttonClicked.connect(self.testprint) 
 
