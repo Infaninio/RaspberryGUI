@@ -13,13 +13,10 @@ class MediaPlayer():
     def __init__(self):
         #super().__init__()
         self.player = QMediaPlayer()
-        self.currPlaylist = QMediaPlaylist()
+        self.currPlaylist = QMediaPlaylist(self.player)
 
         self.player.mediaStatusChanged.connect(self.newStatus)
-
-
-
-
+        self.player.error.connect(self.playererror)
         self.playLists = {"default": "empty"}
         playliststmp = listdir(MUSIKPATH + "\\Playlists\\")
 
@@ -32,10 +29,12 @@ class MediaPlayer():
 
 
     def newStatus(self, status):
-        print(status)
+        print(self.player.mediaStatus())
         if status == QMediaPlayer.LoadedMedia:
-            print("loaded")
             self.player.play()
+
+    def playererror(self, error):
+        print("Error: " + error)
 
     def getPlaylistNames(self):
         return self.playLists.keys()
@@ -51,13 +50,16 @@ class MediaPlayer():
             path = MUSIKPATH + line
             #Zeilenumbruch am ende des Pfad Stringes hat dazu geführt dass die Datei nicht gefunden werden konnnten, fällt das "\n" weg ist es kein Problem mehr
             path = path[:-1]
-            self.player.setMedia(QMediaContent(QUrl.fromLocalFile(path)))
+            self.currPlaylist.addMedia(QMediaContent(QUrl.fromLocalFile(path)))
             print(path)
         
-        self.currPlaylist.setCurrentIndex(1)
-        #self.player.setPlaylist(self.currPlaylist)
-        #self.player.setMedia(QMediaContent(QUrl.fromLocalFile("E:\Musik\Martin\(I Can't Get No) Satisfaction.mp3")))
-        print(self.player.mediaStatus())
+            
+            
+            #self.player.setMedia(QMediaContent(self.currPlaylist))
+        self.player.setPlaylist(self.currPlaylist)
+        self.player.playlist().setCurrentIndex(1)
+        #self.player.setMedia(QMediaContent(QUrl.fromLocalFile("\\Music\\5 Seconds Of Summer\\Unknown Album\\# - Youngblood.mp3")))
+
 
     def play(self):
         #self.player.play()
