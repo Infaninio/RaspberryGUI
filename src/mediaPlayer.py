@@ -1,23 +1,23 @@
-import PyQt5.QtMultimedia
-import PyQt5.QtMultimediaWidgets
-
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
-from PyQt5.QtCore import QUrl
-from PyQt5.QtWidgets import QWidget, QPushButton
 from os import listdir
+import pygame
+import random
 
 MUSIKPATH = "E:"
 
 
 class MediaPlayer():
     def __init__(self):
-        #super().__init__()
-        self.player = QMediaPlayer()
-        self.currPlaylist = QMediaPlaylist(self.player)
 
-        self.player.mediaStatusChanged.connect(self.newStatus)
-        self.player.error.connect(self.playererror)
-        self.playLists = {"default": "empty"}
+        pygame.init()
+        pygame.mixer.init()
+        pygame.mixer_music.set_endevent(pygame.USEREVENT)
+        pygame.mixer_music.set_volume(50)
+        self.playList = list()
+        self.plPos = 0
+        self.state = False
+
+
+        self.playLists = dict()
         playliststmp = listdir(MUSIKPATH + "\\Playlists\\")
 
         for element in playliststmp:
@@ -25,49 +25,62 @@ class MediaPlayer():
                 self.playLists[element[:-4]] = MUSIKPATH + "/Playlists/" + element
 
 
-
-
-
-    def newStatus(self, status):
-        print(self.player.mediaStatus())
-        if status == QMediaPlayer.LoadedMedia:
-            self.player.play()
-
-    def playererror(self, error):
-        print("Error: " + error)
-
     def getPlaylistNames(self):
         return self.playLists.keys()
 
     def setPlayList(self, playList):
-        self.playLists["default"] = playList
         self.loadPlayList(self.playLists[playList])
 
     def loadPlayList(self, playlistPath):
         file = open(playlistPath, "r")
-        self.currPlaylist.clear()
+        self.playList.clear()
         for line in file:
             path = MUSIKPATH + line
             #Zeilenumbruch am ende des Pfad Stringes hat dazu geführt dass die Datei nicht gefunden werden konnnten, fällt das "\n" weg ist es kein Problem mehr
             path = path[:-1]
-            self.currPlaylist.addMedia(QMediaContent(QUrl.fromLocalFile(path)))
+            self.playList.append(path)
             print(path)
-        
-            
-            
-            #self.player.setMedia(QMediaContent(self.currPlaylist))
-        self.player.setPlaylist(self.currPlaylist)
-        self.player.playlist().setCurrentIndex(1)
-        #self.player.setMedia(QMediaContent(QUrl.fromLocalFile("\\Music\\5 Seconds Of Summer\\Unknown Album\\# - Youngblood.mp3")))
+
+        self.plPos = 0
+        random.shuffle(self.playList)
+        pygame.mixer_music.load(self.playList[self.plPos])
+        pygame.mixer_music.play()
+        self.state = True
 
 
-    def play(self):
-        #self.player.play()
-        print(self.player.mediaStatus())
+    def playPause(self, arg=0):
+        if self.state:
+            #Player is running, need to pause
+            pygame.mixer_music.pause()
+            self.state = False
+            return False
+        else:
+            pygame.mixer_music.unpause()
+            self.state = True
+            return True
 
-    def pause(self):
-        #self.player.pause()
-        print("nothing")
+    def next(self,arg=0):
+        pygame.mixer_music.stop()
+        self.changePos(1)
+        pygame.mixer_music.load(self.playList[self.plPos])
+        pygame.mixer_music.play()
+        self.state = True
+
+    def prev(self,arg=0):
+        pygame.mixer_music.stop()
+        self.changePos(-1)
+        pygame.mixer_music.load(self.playList[self.plPos])
+        pygame.mixer_music.play()
+        self.state = True
+
+    def changePos(self, diff):
+        self.plPos += diff
+        if self.plPos < 0:
+            random.shuffle(self.playList)
+            self.plPos = 0
+        elif self.plPos > len(self.playList):
+            random.shuffle(self.playList)
+            self.plPos = 0
 
 
     def numberOfPlaylists(self):

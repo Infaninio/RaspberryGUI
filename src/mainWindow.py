@@ -19,7 +19,6 @@ class Window():
         self.musikWin = MusikWinGen(self)
         self.avWin = AvWindow(self)
         self.mainWin.show()
-        self.musikStat = False
         
 
     def changeToMusik(self, arg):
@@ -32,21 +31,6 @@ class Window():
     def changeToAv(self, arg):
         self.avWin.show()
         self.mainWin.hide()
-
-
-    def playMusik(self, arg):
-        if self.musikStat == True:
-            self.musikStat = False
-            print("Musik wiedergeben")
-        else:
-            self.musikStat = True
-            print("Musik pausieren")
-
-    def nextTitle(self, arg):
-        print("Next Title")
-
-    def prevTitle(self, arg):
-        print("Last Title")
 
 
 class GenWindow(QMainWindow):
@@ -95,7 +79,7 @@ class GenWindow(QMainWindow):
         prevMBt.setFlat(True)
         prevMBt.setIcon(QIcon(IMAGEPATH + "/icoprev.png"))
         prevMBt.setIconSize(QSize(80,40))
-        prevMBt.clicked.connect(self.stateM.prevTitle)
+        prevMBt.clicked.connect(self.stateM.mediaPlayer.prev)
         
       
         nextMBt = QPushButton(musikWd)
@@ -103,7 +87,7 @@ class GenWindow(QMainWindow):
         nextMBt.setFlat(True)
         nextMBt.setIcon(QIcon(IMAGEPATH + "/iconext.png"))
         nextMBt.setIconSize(QSize(80,40))
-        nextMBt.clicked.connect(self.stateM.nextTitle)
+        nextMBt.clicked.connect(self.stateM.mediaPlayer.next)
 
 
 
@@ -116,13 +100,10 @@ class GenWindow(QMainWindow):
 
 
     def playBtCl(self, arg):
-        self.stateM.playMusik(arg)
-        if self.stateM.musikStat == True:
+        if self.stateM.mediaPlayer.playPause():
             self.playM.setIcon(QIcon(IMAGEPATH + "/icopause.png"))
-            self.stateM.mediaPlayer.play()
         else:
             self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
-            self.stateM.mediaPlayer.pause()
         
 
 
@@ -231,9 +212,8 @@ class MusikWinGen(GenWindow):
 
 
     def testprint(self, id):
-
         self.stateM.mediaPlayer.setPlayList(id.text())
-        print("Button Click"+ id.text())
+        #print("Button Click"+ id.text())
 
 
 
