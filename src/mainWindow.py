@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 import src.IoController as ioContr
 from src.mediaPlayer import MediaPlayer
 import os
+import platform
 
 IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
 
@@ -14,12 +15,15 @@ IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
 class Window():
     # State Machine für die Anzeige
     def __init__(self):
+        if "win" in platform.platform():
+            IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
+        else:
+            IMAGEPATH = "/home/pi/Desktop/RaspberryGUI/img"
         self.mediaPlayer = MediaPlayer()
         self.mainWin = MainWindow(self)
         self.musikWin = MusikWinGen(self)
         self.avWin = AvWindow(self)
         self.mainWin.show()
-        
 
     def changeToMusik(self, arg):
         self.musikWin.show()
@@ -151,21 +155,23 @@ class MainWindow(GenWindow):
         musikBt.setIconSize(QSize(110,110))
         musikBt.clicked.connect(self.stateM.changeToMusik)
 
+        #AV Button
         avBt = QPushButton(self)
         avBt.setGeometry(110,232,128,128)
         avBt.setFlat(True)
         avBt.setStyleSheet(styleSheetStr)
         avBt.setIcon(QIcon(IMAGEPATH + "/av.png"))
-
         avBt.setIconSize(QSize(110,110))
         avBt.clicked.connect(self.stateM.changeToAv)
 
+        #Beamer Button
         beamerBt = QPushButton(self)
         beamerBt.setGeometry(336,232,128,128)
         beamerBt.setFlat(True)
         beamerBt.setStyleSheet(styleSheetStr)
         beamerBt.setIcon(QIcon(IMAGEPATH + "/beamer.png"))
         beamerBt.setIconSize(QSize(110,110))
+        beamerBt.clicked.connect(ioContr.beamerPwr)
 
         einstellungenBt = QPushButton(self)
         einstellungenBt.setGeometry(562,232,128,128)
@@ -256,6 +262,7 @@ class AvWindow(GenWindow):
 
 
     def pcAudioCon(self, arg):
+        ioContr.avPc()
         print("GAME Channel @Denon")
 
     def rpiAudioCon(self, arg):
@@ -266,4 +273,5 @@ class AvWindow(GenWindow):
             print("Maybe not Raspbian")
 
     def bluerayAudioCon(self, arg):
+        ioContr.avBlp()
         print("BlueRay Channel @Denon")

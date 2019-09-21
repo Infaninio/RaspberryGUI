@@ -1,12 +1,20 @@
-from os import listdir
+from os import listdir, path
 import pygame
 import random
+import platform
 
 MUSIKPATH = "E:"
 
 
 class MediaPlayer():
     def __init__(self):
+
+        print(platform.platform())
+
+        if "Win" in platform.platform():
+            MUSIKPATH = "E:"
+        else:
+            MUSIKPATH = "/home/pi/Music/sync"
 
         pygame.init()
         pygame.mixer.init()
@@ -18,11 +26,11 @@ class MediaPlayer():
 
 
         self.playLists = dict()
-        playliststmp = listdir(MUSIKPATH + "\\Playlists\\")
+        playliststmp = listdir(MUSIKPATH + path.sep + "Playlists" + path.sep)
 
         for element in playliststmp:
             if ".m3u" in element:
-                self.playLists[element[:-4]] = MUSIKPATH + "/Playlists/" + element
+                self.playLists[element[:-4]] = MUSIKPATH + path.sep + "Playlists" + path.sep + element
 
 
     def getPlaylistNames(self):
@@ -35,11 +43,13 @@ class MediaPlayer():
         file = open(playlistPath, "r")
         self.playList.clear()
         for line in file:
-            path = MUSIKPATH + line
+            flpath = MUSIKPATH + line
+            flpath = flpath.replace("/", path.sep)
+            flpath = flpath.replace("\\",path.sep)
             #Zeilenumbruch am ende des Pfad Stringes hat dazu geführt dass die Datei nicht gefunden werden konnnten, fällt das "\n" weg ist es kein Problem mehr
-            path = path[:-1]
-            self.playList.append(path)
-            print(path)
+            flpath = flpath[:-1]
+            self.playList.append(flpath)
+            print(flpath)
 
         self.plPos = 0
         random.shuffle(self.playList)
