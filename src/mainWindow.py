@@ -8,22 +8,23 @@ from src.mediaPlayer import MediaPlayer
 import os
 import platform
 
-IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
-
 
 
 class Window():
     # State Machine für die Anzeige
     def __init__(self):
-        if "win" in platform.platform():
-            IMAGEPATH = "C:/Users/marti/source/repos/RaspberryGUI/img"
-        else:
-            IMAGEPATH = "/home/pi/Desktop/RaspberryGUI/img"
+
+        self.IMAGEPATH = os.path.abspath(".") + os.path.sep + "img" + os.path.sep
+        self.IMAGEPATH = self.IMAGEPATH.replace("\\", "/")
         self.mediaPlayer = MediaPlayer()
         self.mainWin = MainWindow(self)
         self.musikWin = MusikWinGen(self)
         self.avWin = AvWindow(self)
         self.mainWin.show()
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.mediaPlayer.eventLoop)
+        self.timer.start(100)
 
     def changeToMusik(self, arg):
         self.musikWin.show()
@@ -36,7 +37,6 @@ class Window():
         self.avWin.show()
         self.mainWin.hide()
 
-
 class GenWindow(QMainWindow):
     """description of class"""
    
@@ -48,7 +48,7 @@ class GenWindow(QMainWindow):
 
         self.setObjectName("GenWindow")
 
-        styleSheetStr = "QMainWindow#GenWindow{background-image: url(" + IMAGEPATH + "/rapibackresize.jpg" + ");}"
+        styleSheetStr = "QMainWindow#GenWindow{background-image: url(" + self.stateM.IMAGEPATH + "rapibackresize.jpg" + ");}"
         self.setStyleSheet(styleSheetStr)
 
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -63,7 +63,7 @@ class GenWindow(QMainWindow):
         closeBt.clicked.connect(self.close)
         closeBt.setGeometry(0,0,200,60)
         closeBt.setFont(QFont("Calibri", 35, QFont.Bold))
-        closeBt.setStyleSheet("QPushButton{background-image: url(" + IMAGEPATH + "/icobackleiste.png" + ");color: white;}")
+        closeBt.setStyleSheet("QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icobackleiste.png" + ");color: white;}")
         closeBt.setFlat(True)
 
 
@@ -74,14 +74,14 @@ class GenWindow(QMainWindow):
         self.playM = QPushButton(musikWd)
         self.playM.setGeometry(140,0,120,60)
         self.playM.setFlat(True)
-        self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
+        self.playM.setIcon(QIcon(self.stateM.IMAGEPATH + "icoplay.png"))
         self.playM.setIconSize(QSize(80,40))
         self.playM.clicked.connect(self.playBtCl)
 
         prevMBt = QPushButton(musikWd)
         prevMBt.setGeometry(20,0,120,60)
         prevMBt.setFlat(True)
-        prevMBt.setIcon(QIcon(IMAGEPATH + "/icoprev.png"))
+        prevMBt.setIcon(QIcon(self.stateM.IMAGEPATH + "icoprev.png"))
         prevMBt.setIconSize(QSize(80,40))
         prevMBt.clicked.connect(self.stateM.mediaPlayer.prev)
         
@@ -89,7 +89,7 @@ class GenWindow(QMainWindow):
         nextMBt = QPushButton(musikWd)
         nextMBt.setGeometry(260,0,120,60)
         nextMBt.setFlat(True)
-        nextMBt.setIcon(QIcon(IMAGEPATH + "/iconext.png"))
+        nextMBt.setIcon(QIcon(self.stateM.IMAGEPATH + "iconext.png"))
         nextMBt.setIconSize(QSize(80,40))
         nextMBt.clicked.connect(self.stateM.mediaPlayer.next)
 
@@ -98,26 +98,36 @@ class GenWindow(QMainWindow):
         menuBt = QPushButton("Menü", leiste)
         menuBt.setGeometry(600,0,200,60)
         menuBt.setFont(QFont("Calibri", 37, QFont.Bold))
-        menuBt.setStyleSheet("QPushButton{background-image: url(" + IMAGEPATH + "/icobackleiste.png" + "); color: white;}")
+        menuBt.setStyleSheet("QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icobackleiste.png" + "); color: white;}")
         menuBt.clicked.connect(self.stateM.changeToMenu)
         menuBt.setFlat(True)
 
 
     def playBtCl(self, arg):
         if self.stateM.mediaPlayer.playPause():
-            self.playM.setIcon(QIcon(IMAGEPATH + "/icopause.png"))
+            self.playM.setIcon(QIcon(self.stateM.IMAGEPATH + "icopause.png"))
         else:
-            self.playM.setIcon(QIcon(IMAGEPATH + "/icoplay.png"))
+            self.playM.setIcon(QIcon(self.stateM.IMAGEPATH + "icoplay.png"))
         
 
 
     def closeEvent(self, event):
+        self.stateM.timer.stop()
         reply = QMessageBox.question(self, "Nachricht", "Soll die Anwendung geschlossen werden?", QMessageBox.Yes | QMessageBox.No)
 
         if(reply == QMessageBox.Yes):
             event.accept()
         else:
             event.ignore()
+            self.stateM.timer.start(100)
+           
+
+    def show(self):
+        if self.stateM.mediaPlayer.playing():
+            self.playM.setIcon(QIcon(self.stateM.IMAGEPATH + "icopause.png"))
+        else:
+            self.playM.setIcon(QIcon(self.stateM.IMAGEPATH + "icoplay.png"))
+        return super().show()
 
 
 
@@ -127,14 +137,14 @@ class MainWindow(GenWindow):
         super().__init__(window)
 
         #String für den Button Hintergrund
-        styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2kl.png" + ");}"
+        styleSheetStr = "QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icoback2kl.png" + ");}"
 
         #Computer Button
         computerBt = QPushButton(self)
         computerBt.setGeometry(110,60,128,128)
         computerBt.setFlat(True)
         computerBt.setStyleSheet(styleSheetStr)
-        computerBt.setIcon(QIcon(IMAGEPATH + "/computer.png"))
+        computerBt.setIcon(QIcon(self.stateM.IMAGEPATH + "computer.png"))
         computerBt.setIconSize(QSize(110,110))
         computerBt.clicked.connect(ioContr.bootPC)
 
@@ -143,15 +153,16 @@ class MainWindow(GenWindow):
         cdBt.setGeometry(336,60,128,128)
         cdBt.setFlat(True)
         cdBt.setStyleSheet(styleSheetStr)
-        cdBt.setIcon(QIcon(IMAGEPATH + "/cd.png"))
+        cdBt.setIcon(QIcon(self.stateM.IMAGEPATH + "cd.png"))
         cdBt.setIconSize(QSize(110,110))
+        cdBt.clicked.connect(ioContr.scUP)
 
         #Radio Button
         musikBt = QPushButton(self)
         musikBt.setGeometry(562,60,128,128)
         musikBt.setFlat(True)
         musikBt.setStyleSheet(styleSheetStr)
-        musikBt.setIcon(QIcon(IMAGEPATH + "/musik.png"))
+        musikBt.setIcon(QIcon(self.stateM.IMAGEPATH + "musik.png"))
         musikBt.setIconSize(QSize(110,110))
         musikBt.clicked.connect(self.stateM.changeToMusik)
 
@@ -160,7 +171,7 @@ class MainWindow(GenWindow):
         avBt.setGeometry(110,232,128,128)
         avBt.setFlat(True)
         avBt.setStyleSheet(styleSheetStr)
-        avBt.setIcon(QIcon(IMAGEPATH + "/av.png"))
+        avBt.setIcon(QIcon(self.stateM.IMAGEPATH + "av.png"))
         avBt.setIconSize(QSize(110,110))
         avBt.clicked.connect(self.stateM.changeToAv)
 
@@ -169,7 +180,7 @@ class MainWindow(GenWindow):
         beamerBt.setGeometry(336,232,128,128)
         beamerBt.setFlat(True)
         beamerBt.setStyleSheet(styleSheetStr)
-        beamerBt.setIcon(QIcon(IMAGEPATH + "/beamer.png"))
+        beamerBt.setIcon(QIcon(self.stateM.IMAGEPATH + "beamer.png"))
         beamerBt.setIconSize(QSize(110,110))
         beamerBt.clicked.connect(ioContr.beamerPwr)
 
@@ -177,15 +188,16 @@ class MainWindow(GenWindow):
         einstellungenBt.setGeometry(562,232,128,128)
         einstellungenBt.setFlat(True)
         einstellungenBt.setStyleSheet(styleSheetStr)
-        einstellungenBt.setIcon(QIcon(IMAGEPATH + "/einstellungen.png"))
+        einstellungenBt.setIcon(QIcon(self.stateM.IMAGEPATH + "einstellungen.png"))
         einstellungenBt.setIconSize(QSize(110,110))
+        einstellungenBt.clicked.connect(ioContr.scDOWN)
 
 
 class MusikWinGen(GenWindow):
     def __init__(self, window):
         super().__init__(window)
 
-        styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2PlayList.png" + "); color: white;}"
+        styleSheetStr = "QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icoback2PlayList.png" + "); color: white;}"
         PlListWg = QWidget(self)
         scrollLength = 70 * self.stateM.mediaPlayer.numberOfPlaylists()
         PlListWg.setGeometry(200,30,400,scrollLength)
@@ -230,13 +242,13 @@ class AvWindow(GenWindow):
 
 
          #String für den Button Hintergrund
-        styleSheetStr = "QPushButton{background-image: url(" + IMAGEPATH + "/icoback2kl.png" + ");}"
+        styleSheetStr = "QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icoback2kl.png" + ");}"
 
         pcAudioBt = QPushButton(self)
         pcAudioBt.setGeometry(110,143,128,128)
         pcAudioBt.setFlat(True)
         pcAudioBt.setStyleSheet(styleSheetStr)
-        pcAudioBt.setIcon(QIcon(IMAGEPATH + "/computer.png"))
+        pcAudioBt.setIcon(QIcon(self.stateM.IMAGEPATH + "computer.png"))
         pcAudioBt.setIconSize(QSize(110,110))
         pcAudioBt.clicked.connect(self.pcAudioCon)
 
@@ -244,7 +256,7 @@ class AvWindow(GenWindow):
         rpiAudioBt.setGeometry(336,143,128,128)
         rpiAudioBt.setFlat(True)
         rpiAudioBt.setStyleSheet(styleSheetStr)
-        rpiAudioBt.setIcon(QIcon(IMAGEPATH + "/raspberry.png"))
+        rpiAudioBt.setIcon(QIcon(self.stateM.IMAGEPATH + "raspberry.png"))
         rpiAudioBt.setIconSize(QSize(110,110))
         rpiAudioBt.clicked.connect(self.rpiAudioCon)
 
@@ -252,7 +264,7 @@ class AvWindow(GenWindow):
         bluerayAudioBt.setGeometry(562,143,128,128)
         bluerayAudioBt.setFlat(True)
         bluerayAudioBt.setStyleSheet(styleSheetStr)
-        bluerayAudioBt.setIcon(QIcon(IMAGEPATH + "/blueray.png"))
+        bluerayAudioBt.setIcon(QIcon(self.stateM.IMAGEPATH + "blueray.png"))
         bluerayAudioBt.setIconSize(QSize(110,110))
         bluerayAudioBt.clicked.connect(self.bluerayAudioCon)
 

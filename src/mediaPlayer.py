@@ -23,6 +23,7 @@ class MediaPlayer():
         self.playList = list()
         self.plPos = 0
         self.state = False
+        self.chgSrc = False
 
 
         self.playLists = dict()
@@ -75,6 +76,7 @@ class MediaPlayer():
         pygame.mixer_music.load(self.playList[self.plPos])
         pygame.mixer_music.play()
         self.state = True
+        self.chgSrc = True
 
     def prev(self,arg=0):
         pygame.mixer_music.stop()
@@ -82,6 +84,7 @@ class MediaPlayer():
         pygame.mixer_music.load(self.playList[self.plPos])
         pygame.mixer_music.play()
         self.state = True
+        self.chgSrc = True
 
     def changePos(self, diff):
         self.plPos += diff
@@ -95,3 +98,21 @@ class MediaPlayer():
 
     def numberOfPlaylists(self):
         return len(self.playLists) - 1
+
+
+    def playing(self):
+        return self.state
+
+
+    def eventLoop(self):
+        events = pygame.event.get()
+
+        for event in events:
+            if event.type == pygame.USEREVENT:
+                if self.chgSrc == True:
+                    self.chgSrc = False
+                else:
+                    #Song zu Ende
+                    self.changePos(1)
+                    pygame.mixer_music.load(self.playList[self.plPos])
+                    pygame.mixer_music.play()
