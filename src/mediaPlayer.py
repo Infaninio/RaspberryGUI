@@ -3,16 +3,16 @@ import pygame
 import random
 import platform
 
-MUSIKPATH = "E:"
-
+MUSIKPATH = None
 
 class MediaPlayer():
     def __init__(self):
 
         print(platform.platform())
 
+        # Decide whether this script is running on RaspPi or Windows
         if "Win" in platform.platform():
-            MUSIKPATH = "E:"
+            MUSIKPATH = "D:/Music"
         else:
             MUSIKPATH = "/home/pi/Music/sync"
 
