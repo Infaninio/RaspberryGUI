@@ -11,7 +11,7 @@ import platform
 
 
 class Window():
-    # State Machine für die Anzeige
+    # State Machine for the Display
     def __init__(self):
 
         self.IMAGEPATH = os.path.abspath(".") + os.path.sep + "img" + os.path.sep
@@ -53,7 +53,7 @@ class GenWindow(QMainWindow):
 
         self.setWindowFlag(Qt.FramelessWindowHint)
 
-        #Leiste
+        #Bottom Menu
         leiste = QWidget(self)
         leiste.setStyleSheet("background: transparent")
         leiste.setGeometry(0,420,800,60)
@@ -136,7 +136,7 @@ class MainWindow(GenWindow):
     def __init__(self, window):
         super().__init__(window)
 
-        #String für den Button Hintergrund
+        #String for setting the Button Background
         styleSheetStr = "QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icoback2kl.png" + ");}"
 
         #Computer Button
@@ -231,7 +231,6 @@ class MusikWinGen(GenWindow):
 
     def testprint(self, id):
         self.stateM.mediaPlayer.setPlayList(id.text())
-        #print("Button Click"+ id.text())
 
 
 
@@ -241,7 +240,7 @@ class AvWindow(GenWindow):
         super().__init__(window)
 
 
-         #String für den Button Hintergrund
+         #String for Button Background
         styleSheetStr = "QPushButton{background-image: url(" + self.stateM.IMAGEPATH + "icoback2kl.png" + ");}"
 
         pcAudioBt = QPushButton(self)

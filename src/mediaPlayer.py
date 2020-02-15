@@ -8,14 +8,6 @@ MUSIKPATH = None
 class MediaPlayer():
     def __init__(self):
 
-        print(platform.platform())
-
-        # Decide whether this script is running on RaspPi or Windows
-        if "Win" in platform.platform():
-            MUSIKPATH = "D:/Music"
-        else:
-            MUSIKPATH = "/home/pi/Music/sync"
-
         pygame.init()
         pygame.mixer.init()
         pygame.mixer_music.set_endevent(pygame.USEREVENT)
@@ -27,6 +19,10 @@ class MediaPlayer():
 
 
         self.playLists = dict()
+        if MUSIKPATH == None:
+            print("You did not specify a Folder for the Musik. Please change MUSIKPATH in mediaPlayer.py")
+            return
+        
         playliststmp = listdir(MUSIKPATH + path.sep + "Playlists" + path.sep)
 
         for element in playliststmp:
@@ -47,7 +43,7 @@ class MediaPlayer():
             flpath = MUSIKPATH + line
             flpath = flpath.replace("/", path.sep)
             flpath = flpath.replace("\\",path.sep)
-            #Zeilenumbruch am ende des Pfad Stringes hat dazu geführt dass die Datei nicht gefunden werden konnnten, fällt das "\n" weg ist es kein Problem mehr
+            #line break at the end of the line lead to not finding the file. 
             flpath = flpath[:-1]
             self.playList.append(flpath)
             print(flpath)

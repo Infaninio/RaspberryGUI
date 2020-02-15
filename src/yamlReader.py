@@ -24,7 +24,7 @@ class YamlReader:
 
         stream = open(YamlPath, "w")
         if data == None:
-            #Sonder Behandlung da sonst data leer ist und python nicht weiß dass das ein Dict werden soll
+            #Sonder Behandlung da sonst data leer ist und python nicht weiss dass das ein Dict werden soll
             data = {"Last Modified": time.strftime("%d.%m.%Y")}
         data[Key] = Value
         data["Last Modified"] = time.strftime("%d.%m.%Y")

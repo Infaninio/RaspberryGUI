@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+OnRaspberry = False
 try:
     import RPi.GPIO as GPIO
+    OnRaspberry = True
 except:
     print("Fehler beim Import von RPi")
+    OnRaspberry = False
 import time
 import platform
 import os
@@ -13,8 +16,8 @@ C = 13
 D = 6
 
 def initIO():
-    if "Win" in platform.platform():
-        print("Windows, IO initialisiert")
+    if not OnRaspberry:
+        print("Did Not Detection GPIO lib for Raspberry, InitIO")
         return
 
     GPIO.setmode(GPIO.BCM)
@@ -31,8 +34,8 @@ def initIO():
     print("initialisierung...")
 
 def bootPC():
-    if "Win" in platform.platform():
-        print("Windows, Start PC")
+    if not OnRaspberry:
+        print("Did Not Detection GPIO lib for Raspberry, Start PC")
         return
 
     GPIO.output(17, GPIO.HIGH)
